@@ -34,6 +34,7 @@ class _AppState extends State<App> {
   Color scoreColor =  primary;
   Color correctAns = Color.fromRGBO(0, 250, 0, 1);
   Color wrongAns = Color.fromRGBO(255, 0, 0, 1);
+  Key _formKey = GlobalKey<FormState>();
 
   final player = AudioCache();
   @override
@@ -70,15 +71,17 @@ class _AppState extends State<App> {
     Widget start (){
         return Container(
           color: Colors.green,
-          child: FlatButton(
-            child: Text("start"),
-              onPressed: (){
-              setState(() {
-                notStarted = false;
-                startTimer();
-              });
-    },
-        ) ,
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                TextFormField(onChanged: (val) {
+                  print("changed");
+                },
+                ),
+              ],
+            ),
+          ) ,
         );
     }
 
@@ -223,3 +226,14 @@ class _AppState extends State<App> {
   }
 }
 
+
+
+//FlatButton(
+//child: Text("start"),
+//onPressed: (){
+//setState(() {
+//notStarted = false;
+//startTimer();
+//});
+//},
+//)
