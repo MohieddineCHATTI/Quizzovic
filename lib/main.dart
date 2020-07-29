@@ -4,12 +4,15 @@ import 'dart:async';
 import 'package:swipable/components/finalResult.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'styles.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
+
 
 void main() {
-  runApp(MyApp());
+  runApp(Phoenix(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -25,6 +28,7 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+
   bool notStarted = true;
   List data = database;
   int score = 0 ;
@@ -35,10 +39,22 @@ class _AppState extends State<App> {
   Color correctAns = Color.fromRGBO(0, 250, 0, 1);
   Color wrongAns = Color.fromRGBO(255, 0, 0, 1);
   Key _formKey = GlobalKey<FormState>();
+  bool proceed = false;
+  String userName ;
 
   final player = AudioCache();
   @override
   Widget build(BuildContext context) {
+    void restart (){
+      setState(() {
+        notStarted = true;
+        stopCounting = true;
+        timeNow = 15;
+        score = 0;
+        qstNumber = 0;
+        scoreColor = primary;
+      });
+    }
     player.loadAll(["correct.mp3", "wrong.mp3"]);
     startTimer (){
       const period = Duration(seconds: 1);
@@ -59,7 +75,7 @@ class _AppState extends State<App> {
           timeNow = 15;
             }else{
               print("last Q");
-              Navigator.push(context, MaterialPageRoute(builder: (context) => FinalResult()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => FinalResult(score, userName)));
               stopCounting = true;
               timer.cancel();
             }
@@ -69,21 +85,67 @@ class _AppState extends State<App> {
       });
     }
     Widget start (){
-        return Container(
-          color: Colors.green,
-          child: Form(
-            key: _formKey,
+        return Scaffold(
+          body: Container(
+            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                TextFormField(onChanged: (val) {
-                  print("changed");
-                },
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: <Widget>[
+                      TextFormField(onChanged: (val) {
+                        if (val.isNotEmpty){
+                          setState(() {
+                            setState(() {
+                              userName = val;
+                            });
+                            proceed = true;
+
+                          });
+                        }else{
+                          setState(() {
+                            proceed = false;
+                          });
+                        }
+
+                      },
+
+                      ),
+                      !proceed ? Text("enter your name") : FlatButton(
+                        child: Text("start"),
+                        onPressed: (){
+                          setState(() {
+                            notStarted = false;
+                            stopCounting = false;
+                            startTimer();
+                          });
+                        },
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),
-          ) ,
+          ),
         );
     }
+    Widget playAgain (){
+      return Container(
+        child: IconButton(
+          icon: Icon(Icons.refresh),
+          iconSize: 50,
+          onPressed: (){
+//            restart();
+          Phoenix.rebirth(context);
+          },
+        ),
+      );
+    }
+
+
+
 
 
 
@@ -110,10 +172,20 @@ class _AppState extends State<App> {
                       ),
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(0, 10, 0 ,10),
-                        child: Center(
-                          child: Text("Score  :  ${score.toString()}",style: TextStyle(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children:<Widget>[
+                            IconButton(
+                              icon: Icon(Icons.refresh),
+                              onPressed: (){
+                                restart();
+
+                              },
+                            ),
+                            Text(score.toString(),style: TextStyle(
                             fontSize: 20,
                           ),),
+                          Text(userName)]
                         ),
                       ),
                     ),
@@ -165,7 +237,10 @@ class _AppState extends State<App> {
 //                              startTimer();
                               }else{
                                 print("last Q");
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => FinalResult()));
+                                setState(() {
+                                  stopCounting = true;
+                                });
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => FinalResult(score, userName)));
 
                               }
 
@@ -187,7 +262,10 @@ class _AppState extends State<App> {
                                 });
                               }else{
                                 print("last Q");
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => FinalResult()));
+                                setState(() {
+                                  stopCounting = true;
+                                });
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => FinalResult(score, userName)));
 
                               }
 //                           Scaffold.of(context).showSnackBar(SnackBar(
@@ -226,14 +304,3 @@ class _AppState extends State<App> {
   }
 }
 
-
-
-//FlatButton(
-//child: Text("start"),
-//onPressed: (){
-//setState(() {
-//notStarted = false;
-//startTimer();
-//});
-//},
-//)
