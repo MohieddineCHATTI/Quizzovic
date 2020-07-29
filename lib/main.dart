@@ -131,18 +131,6 @@ class _AppState extends State<App> {
           ),
         );
     }
-    Widget playAgain (){
-      return Container(
-        child: IconButton(
-          icon: Icon(Icons.refresh),
-          iconSize: 50,
-          onPressed: (){
-//            restart();
-          Phoenix.rebirth(context);
-          },
-        ),
-      );
-    }
 
 
 
@@ -178,7 +166,11 @@ class _AppState extends State<App> {
                             IconButton(
                               icon: Icon(Icons.refresh),
                               onPressed: (){
-                                restart();
+                                setState(() {
+                                  stopCounting = true;
+                                });
+                                Phoenix.rebirth(context);
+//                                restart();
 
                               },
                             ),
