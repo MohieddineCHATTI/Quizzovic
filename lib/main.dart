@@ -87,7 +87,11 @@ class _AppState extends State<App> {
     Widget start (){
         return Scaffold(
           body: Container(
-            padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+            decoration: BoxDecoration(
+              gradient: landingGradient,
+
+            ),
+            padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -95,7 +99,8 @@ class _AppState extends State<App> {
                   key: _formKey,
                   child: Column(
                     children: <Widget>[
-                      TextFormField(onChanged: (val) {
+                      TextFormField(maxLength: 10,
+                        onChanged: (val) {
                         if (val.isNotEmpty){
                           setState(() {
                             setState(() {
@@ -113,8 +118,14 @@ class _AppState extends State<App> {
                       },
 
                       ),
-                      !proceed ? Text("enter your name") : FlatButton(
-                        child: Text("start"),
+                      SizedBox(height: 40,),
+                      !proceed ? Text("Enter Your Name",style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red
+                      ),) : FlatButton(
+                        child: Text("START", style: TextStyle(
+                          fontWeight: FontWeight.bold
+                        ),),
                         onPressed: (){
                           setState(() {
                             notStarted = false;
@@ -142,12 +153,7 @@ class _AppState extends State<App> {
         body: Builder(
           builder: (context)=>Container(
             decoration: BoxDecoration(
-              gradient: (LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color.fromRGBO(50,50 , 7, 1), Color.fromRGBO(0, 60, 61, 1)]
-              ))
-            ),
+              gradient: mainGradient,),
             child: SafeArea(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -191,7 +197,7 @@ class _AppState extends State<App> {
 //                        color:Color.fromRGBO(255, 132, 0, 0.1),),
                       child: Center(child: Text(data[qstNumber][0],
                     style: TextStyle(
-                      color: qstTextColor,
+                      color: mainTextColor,
                       fontSize: 28
                     ),),
                     ))),
