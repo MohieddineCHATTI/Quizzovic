@@ -1,304 +1,57 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:swipable/data/data.dart';
 import 'dart:async';
-import 'package:swipable/components/finalResult.dart';
-import 'package:audioplayers/audio_cache.dart';
-import 'styles.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:swipable/components/Landing.dart';
+import 'package:swipable/components/mainBody.dart';
+import 'dart:io';
 
 
 void main() {
-  runApp(Phoenix(child: MyApp()));
+  runApp(DataLoading());
 }
 
-class MyApp extends StatelessWidget {
-
-  // This widget is the root of your application.
+class Test extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: App(),
+      home: Container(
+        child: RaisedButton(child: Text("get scores"),onPressed: () { DatabaseService().getScores("Mohi", 10);},) ,
+      ),
     );
   }
 }
 
-class App extends StatefulWidget {
+
+
+class DataLoading extends StatefulWidget {
   @override
-  _AppState createState() => _AppState();
+  _DataLoadingState createState() => _DataLoadingState();
 }
 
-class _AppState extends State<App> {
-
-  bool notStarted = true;
-  List data = database;
-  int score = 0 ;
-  int qstNumber = 0;
-  int timeNow =15;
-  bool stopCounting = false;
-  Color scoreColor =  primary;
-  Color correctAns = Color.fromRGBO(0, 250, 0, 1);
-  Color wrongAns = Color.fromRGBO(255, 0, 0, 1);
-  Key _formKey = GlobalKey<FormState>();
-  bool proceed = false;
-  String userName ;
-
-  final player = AudioCache();
+class _DataLoadingState extends State<DataLoading> {
   @override
   Widget build(BuildContext context) {
-    void restart (){
-      setState(() {
-        notStarted = true;
-        stopCounting = true;
-        timeNow = 15;
-        score = 0;
-        qstNumber = 0;
-        scoreColor = primary;
-      });
-    }
-    player.loadAll(["correct.mp3", "wrong.mp3"]);
-    startTimer (){
-      const period = Duration(seconds: 1);
-      Timer.periodic(period,  (timer) {
-        if (timeNow > 0 && !stopCounting){
-          setState(() {
-            timeNow = timeNow-1;
-            print(timeNow);
-          });
-        }else if (stopCounting){
-          timer.cancel();
-        }else if ((timeNow <= 0)){
-          setState(() {
-            if(qstNumber <data.length-1){
-              setState(() {
-                qstNumber++;
-              });
-          timeNow = 15;
-            }else{
-              print("last Q");
-              Navigator.push(context, MaterialPageRoute(builder: (context) => FinalResult(score, userName)));
-              stopCounting = true;
-              timer.cancel();
-            }
+    return MaterialApp(
+      home: FutureBuilder(
+        future: Future.delayed(Duration(seconds: 2), () async {return await DatabaseService().getQuestions();}),
+        builder: (BuildContext context, AsyncSnapshot snapshot){
+          if (snapshot.data != null){
+              print("data is data :${snapshot.data}");
+              return Phoenix(child: MaterialApp(home: MyApp(data: snapshot.data)));
+            }else if (snapshot.data == null) {
+           return Landing();
+          }
 
-          });
+
+            return Landing();
         }
-      });
-    }
-    Widget start (){
-        return Scaffold(
-          body: Container(
-            decoration: BoxDecoration(
-              gradient: landingGradient,
 
-            ),
-            padding: EdgeInsets.fromLTRB(50, 0, 50, 0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      TextFormField(maxLength: 10,
-                        onChanged: (val) {
-                        if (val.isNotEmpty){
-                          setState(() {
-                            setState(() {
-                              userName = val;
-                            });
-                            proceed = true;
-
-                          });
-                        }else{
-                          setState(() {
-                            proceed = false;
-                          });
-                        }
-
-                      },
-
-                      ),
-                      SizedBox(height: 40,),
-                      !proceed ? Text("Enter Your Name",style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red
-                      ),) : FlatButton(
-                        child: Text("START", style: TextStyle(
-                          fontWeight: FontWeight.bold
-                        ),),
-                        onPressed: (){
-                          setState(() {
-                            notStarted = false;
-                            stopCounting = false;
-                            startTimer();
-                          });
-                        },
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-    }
-
-
-
-
-
-
-    return notStarted ? start(): MaterialApp(
-      home: Scaffold(
-        body: Builder(
-          builder: (context)=>Container(
-            decoration: BoxDecoration(
-              gradient: mainGradient,),
-            child: SafeArea(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.only(topLeft: Radius.circular(0), topRight: Radius.circular(0), bottomLeft: Radius.circular(30), bottomRight: Radius.circular(30)),
-                        color: scoreColor,
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 10, 0 ,10),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children:<Widget>[
-                            IconButton(
-                              icon: Icon(Icons.refresh),
-                              onPressed: (){
-                                setState(() {
-                                  stopCounting = true;
-                                });
-                                Phoenix.rebirth(context);
-//                                restart();
-
-                              },
-                            ),
-                            Text(score.toString(),style: TextStyle(
-                            fontSize: 20,
-                          ),),
-                          Text(userName)]
-                        ),
-                      ),
-                    ),
-
-                  SizedBox(height: 30,),
-                  Expanded(
-                    flex: 2,
-                    child: Center(child: Container(constraints: BoxConstraints.expand(),
-//                        decoration: BoxDecoration(
-//                          borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30), bottomLeft: Radius.circular(0), bottomRight: Radius.circular(0)),
-//                        color:Color.fromRGBO(255, 132, 0, 0.1),),
-                      child: Center(child: Text(data[qstNumber][0],
-                    style: TextStyle(
-                      color: mainTextColor,
-                      fontSize: 28
-                    ),),
-                    ))),
-                  ),
-                  Expanded(
-                    flex: 3,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                         for (int i =1; i< data[qstNumber].length; i++)
-                           MaterialButton(
-                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                             color: primary,
-                               minWidth: MediaQuery.of(context).size.width*2/3,
-                               onPressed: (){
-                              if (data[qstNumber][i] == data[qstNumber][1]) {
-                              print("correct");
-                              player.play("correct.mp3");
-                              setState(() {
-                              stopCounting = true;
-                              score = score+timeNow;
-                              scoreColor = correctAns;
-                              });
-                              setState(() {
-                              timeNow = 15;
-                              stopCounting = false;
-                              });
-//                           Scaffold.of(context).showSnackBar(SnackBar(
-//                             content: Text("correct"),
-//                           ));
-                              if(qstNumber <data.length-1){
-                                setState(() {
-                                qstNumber++;
-                                });
-//                              startTimer();
-                              }else{
-                                print("last Q");
-                                setState(() {
-                                  stopCounting = true;
-                                });
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => FinalResult(score, userName)));
-
-                              }
-
-                              }else{
-                              print("wrong");
-                              player.play("wrong.mp3");
-                              setState(() {
-                              stopCounting = true;
-                              score = score-timeNow;
-                              scoreColor = wrongAns;
-                              });
-                              setState(() {
-                              timeNow = 15;
-                              stopCounting = false;
-                              });
-                              if(qstNumber <data.length-1) {
-                                setState(() {
-                                  qstNumber++;
-                                });
-                              }else{
-                                print("last Q");
-                                setState(() {
-                                  stopCounting = true;
-                                });
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => FinalResult(score, userName)));
-
-                              }
-//                           Scaffold.of(context).showSnackBar(SnackBar(
-//                             content: Text("Wrong"),
-//                           ));
-                              }}
-                              ,
-                               child: Text(data[qstNumber][i]),
-                           ),
-
-
-                      ],
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(bottom: 10),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      color: primary,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Text(timeNow.toString()),
-                    ),
-                  )
-
-
-                ],
-              ),
-            ),
-          ),
-        ),
-      )
+      ),
     );
-
   }
 }
 
+
+//Phoenix(child: MaterialApp(home: MyApp()))

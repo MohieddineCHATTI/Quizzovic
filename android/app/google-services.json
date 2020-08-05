@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "449301605484",
+    "firebase_url": "https://quizzovic.firebaseio.com",
+    "project_id": "quizzovic",
+    "storage_bucket": "quizzovic.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:449301605484:android:87cc1d61c2e7721fab3c49",
+        "android_client_info": {
+          "package_name": "com.mohie.swipable"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "449301605484-ktb7hoo5p9a85ork6ah5m06mh3h0nc8f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdM8xfAS78kyA016YdeQIXv5rSYJ9igc8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "449301605484-ktb7hoo5p9a85ork6ah5m06mh3h0nc8f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
