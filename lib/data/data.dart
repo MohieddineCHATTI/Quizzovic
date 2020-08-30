@@ -7,7 +7,7 @@ List importedDatabase;
 
 class DatabaseService {
 
-  final CollectionReference questionDatabase = Firestore.instance.collection("questions");
+  final CollectionReference histGeoQuestionDatabase = Firestore.instance.collection("HistoryGeo");
   final CollectionReference scoreDatabase = Firestore.instance.collection("scores");
 
 Future checkConnectivity () async{
@@ -23,31 +23,32 @@ Future checkConnectivity () async{
   }
 }
 Future getQstCount ()async{
-    QuerySnapshot snap = await Firestore.instance.collection("questions").getDocuments();
+    QuerySnapshot snap = await Firestore.instance.collection("HistoryGeo").getDocuments();
     int qstNumbers = snap.documents.toList().length;
     return (qstNumbers);
   }
 
-//  Future updateQst(List data) async {
-//    int qstCount = await getQstCount();
-//    print("this is quest count: ${qstCount.toString()}");
-//    for (int i = qstCount; (i < database.length + qstCount); i++) {
-//      await questionDatabase.document(i.toString()).setData({
-//        "qst": data[i-qstCount][0],
-//        "ans1": data[i-qstCount][1],
-//        "ans2": data[i-qstCount][2],
-//        "ans3": data[i-qstCount][3],
-//        "ans4": data[i-qstCount][4]
-//      });
-//    }
-//  }
+  Future updateQst(List data) async {
+    int qstCount = await getQstCount();
+    print("this is quest count: ${qstCount.toString()}");
+    for (int i = qstCount; (i < data.length + qstCount); i++) {
+      await histGeoQuestionDatabase.document(i.toString()).setData({
+        "qst": data[i-qstCount][0],
+        "ans1": data[i-qstCount][1],
+        "ans2": data[i-qstCount][2],
+        "ans3": data[i-qstCount][3],
+        "ans4": data[i-qstCount][4]
+      });
+    }
+  }
 
 Future getQuestions ()async{
         bool connectivity = await DatabaseService().checkConnectivity();
         if (connectivity){
-          QuerySnapshot snapshot = await Firestore.instance.collection("questions").getDocuments();
+          QuerySnapshot snapshot = await Firestore.instance.collection("HistoryGeo").getDocuments();
           var list = snapshot.documents.map((e) => (e.data)).toList();
-          importedDatabase = list;
+          list.shuffle();
+          importedDatabase = list.sublist(0, 10);
           return importedDatabase;
         }else{
           return null;

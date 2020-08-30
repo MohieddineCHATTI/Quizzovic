@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:swipable/data/data.dart';
+import 'package:swipable/main.dart';
 import 'package:swipable/styles.dart';
 import 'package:swipable/components/Loading.dart';
 import 'dart:io';

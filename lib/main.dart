@@ -7,22 +7,20 @@ import 'package:swipable/components/Landing.dart';
 import 'package:swipable/components/mainBody.dart';
 import 'dart:io';
 
+import 'package:swipable/updateQst.dart';
+
 
 void main() {
   runApp(DataLoading());
 }
 
+
 class Test extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Container(
-        child: RaisedButton(child: Text("get scores"),onPressed: () { DatabaseService().getScores("Mohi", 10);},) ,
-      ),
-    );
+    return UpdateQst();
   }
 }
-
 
 
 class DataLoading extends StatefulWidget {

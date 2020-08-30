@@ -19,7 +19,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
 
   bool notStarted = true;
-  List data = importedDatabase;
+  List data;
   int score = 0 ;
   int qstNumber = 0;
   int timeNow =10;
@@ -108,13 +108,10 @@ class _MyAppState extends State<MyApp> {
 
                         onChanged: (val) {
                           if (val.isNotEmpty){
-                            setState(() {
                               setState(() {
                                 userName = val;
+                                proceed = true;
                               });
-                              proceed = true;
-
-                            });
                           }else{
                             setState(() {
                               proceed = false;
@@ -140,6 +137,11 @@ class _MyAppState extends State<MyApp> {
                         ),),
                         onPressed: (){
                           setState(() {
+                            importedDatabase.shuffle();
+                            setState(() {
+                              data = importedDatabase.sublist(0,9);
+                            });
+                            print (data);
                             notStarted = false;
                             stopCounting = false;
                             startTimer();
@@ -220,9 +222,10 @@ class _MyAppState extends State<MyApp> {
 //                          borderRadius: BorderRadius.only(topLeft: Radius.circular(30), topRight: Radius.circular(30), bottomLeft: Radius.circular(0), bottomRight: Radius.circular(0)),
 //                        color:Color.fromRGBO(255, 132, 0, 0.1),),
                         child: Center(child: Text(data[qstNumber]["qst"],
+                          textAlign: TextAlign.center,
                           style: TextStyle(
                               color: mainTextColor,
-                              fontSize: 28
+                              fontSize: 28,
                           ),),
                         ))),
                   ),
